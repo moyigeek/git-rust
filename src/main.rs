@@ -20,7 +20,7 @@ fn main() {
         }
         "cat-file"=>{
             if args.len()==4 && args[2]=="-p" {
-                let file_path = format!(".git/objects/{}", args[3]);
+                let file_path = format!(".git/objects/{}/{}", &args[3][0..2], args[3]);
                 let file_content = fs::read(file_path).unwrap();
                 print!("{}", file_content.iter().map(|&b| b as char).collect::<String>());
             } else {
