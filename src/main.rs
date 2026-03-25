@@ -19,7 +19,7 @@ fn main() {
             println!("Initialized git directory")
         }
         "cat-file"=>{
-            if args.len() == 3 {
+            if args.len()==4 && args[2]=="-p" {
                 let file_path = format!(".git/objects/{}", args[2]);
                 let file_content = fs::read(file_path).unwrap();
                 print!("{}", file_content.iter().map(|&b| b as char).collect::<String>());
