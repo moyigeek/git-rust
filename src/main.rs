@@ -9,13 +9,24 @@ fn main() {
 
     // TODO: Uncomment the code below to pass the first stage
     let args: Vec<String> = env::args().collect();
-    if args[1] == "init" {
-        fs::create_dir(".git").unwrap();
-        fs::create_dir(".git/objects").unwrap();
-        fs::create_dir(".git/refs").unwrap();
-        fs::write(".git/HEAD", "ref: refs/heads/main\n").unwrap();
-        println!("Initialized git directory")
-    } else {
-        println!("unknown command: {}", args[1])
+    match args[1].as_str() {
+        "init" => {
+            println!("init");
+            fs::create_dir(".git").unwrap();
+            fs::create_dir(".git/objects").unwrap();
+            fs::create_dir(".git/refs").unwrap();
+            fs::write(".git/HEAD", "ref: refs/heads/main\n").unwrap();
+            println!("Initialized git directory")
+        }
+        "cat-file"=>{
+            if args.len() == 3 {
+                let file_path = format!(".git/objects/{}", args[2]);
+                let file_content = fs::read(file_path).unwrap();
+                print!("{}", file_content.iter().map(|&b| b as char).collect::<String>());
+            } else {
+                println!("Usage: cat-file <object>");
+            }
+        }
+        _ => println!("unknown command: {}", args[1]),
     }
 }
