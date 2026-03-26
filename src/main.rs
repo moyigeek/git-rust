@@ -63,6 +63,7 @@ fn write_file(file_path: &str, content: &str) {
 fn save_blob(file_path: &str, content: &str) {
     let file_name = file_path.split("/").last().unwrap();
     let file_name_hash = algorithm::sha1::Sha1::new().hash(file_name.as_bytes());
+    println!("file name: {}, hash: {}", file_name, file_name_hash);
     let file_name_hash_dir = format!(".git/objects/{}/", &file_name_hash[0..2]);
     let file_name_hash_file = format!(
         ".git/objects/{}/{}",
@@ -74,7 +75,7 @@ fn save_blob(file_path: &str, content: &str) {
     let mut zlib_content = Vec::new();
     zlib_encoder.read_to_end(&mut zlib_content).unwrap();
     fs::create_dir_all(&file_name_hash_dir).unwrap();
-    fs::write(&file_name_hash_file, zlib_content).unwrap();
+    write_file(&file_name_hash_file, &String::from_utf8(zlib_content).unwrap());
 }
 
 #[test]
