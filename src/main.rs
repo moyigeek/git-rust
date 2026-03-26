@@ -28,7 +28,7 @@ fn main() {
                 let mut file_content=String::new();
                 decoder.read_to_string(&mut file_content).unwrap();
                 
-                print!("{}", file_content.iter().map(|&b| b as char).collect::<String>());
+                print!("{}", file_content);
             } else {
                 println!("Usage: cat-file <object>");
             }
