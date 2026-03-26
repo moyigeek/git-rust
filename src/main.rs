@@ -1,6 +1,7 @@
 use crate::algorithm::sha1;
 use flate2::read::{ZlibDecoder, ZlibEncoder};
 use std::env;
+use std::f32::consts::E;
 use std::fs;
 use std::io::Read;
 
@@ -44,7 +45,7 @@ fn main() {
             } else if args.len() == 4 && args[2] == "-w" {
                 let file_path = &args[3];
                 let content = read_file(file_path);
-                save_blob(file_path, &content);
+                save_blob(&content);
             }
         }
         _ => println!("unknown command: {}", args[1]),
@@ -60,22 +61,15 @@ fn write_file(file_path: &str, content: &str) {
     fs::write(file_path, content).unwrap();
 }
 
-fn save_blob(file_path: &str, content: &str) {
-    let file_name = file_path.split("/").last().unwrap();
-    let file_name_hash = algorithm::sha1::Sha1::new().hash(file_name.as_bytes());
-    println!("file name: {}, hash: {}", file_name, file_name_hash);
-    let file_name_hash_dir = format!(".git/objects/{}/", &file_name_hash[0..2]);
-    let file_name_hash_file = format!(
-        ".git/objects/{}/{}",
-        &file_name_hash[0..2],
-        &file_name_hash[2..]
-    );
-    let content = format!("blob {}\0{}", content.len(), content);
-    let mut zlib_encoder = ZlibEncoder::new(content.as_bytes(), flate2::Compression::default());
-    let mut zlib_content = Vec::new();
-    zlib_encoder.read_to_end(&mut zlib_content).unwrap();
-    fs::create_dir_all(&file_name_hash_dir).unwrap();
-    write_file(&file_name_hash_file, &String::from_utf8(zlib_content).unwrap());
+fn save_blob( content: &str) {
+    let hash=algorithm::sha1::Sha1::new().hash(content.as_bytes());
+    println!("Hash of content: {}", hash);
+    let object_path = format!(".git/objects/{}/{}", &hash[0..2], &hash[2..]);
+    let mut encoder = ZlibEncoder::new(content.as_bytes(), flate2::Compression::default());
+    let mut compressed_content = Vec::new();
+    encoder.read_to_end(&mut compressed_content).unwrap();
+    write_file(&object_path, &compressed_content.iter().map(|b| *b as char).collect::<String>());
+    eprintln!("Saved blob to: {}", object_path);
 }
 
 #[test]
