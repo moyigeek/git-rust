@@ -2,7 +2,8 @@
 use std::env;
 #[allow(unused_imports)]
 use std::fs;
-
+use std::io::Read;
+use flate2::read::ZlibDecoder;
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     eprintln!("Logs from your program will appear here!");
@@ -23,6 +24,10 @@ fn main() {
                 let file_path = format!(".git/objects/{}/{}", &args[3][0..2], &args[3][2..]);
                 eprintln!("Reading file: {}", file_path);
                 let file_content = fs::read(file_path).unwrap();
+                let mut decoder = ZlibDecoder::new(&file_content[..]);
+                let mut file_content=String::new();
+                decoder.read_to_string(&mut file_content).unwrap();
+                
                 print!("{}", file_content.iter().map(|&b| b as char).collect::<String>());
             } else {
                 println!("Usage: cat-file <object>");
