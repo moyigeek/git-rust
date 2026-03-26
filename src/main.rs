@@ -57,20 +57,21 @@ fn read_file(file_path: &str) -> String {
     file_content
 }
 
-fn write_file(file_path: &str, content: &str) {
+fn write_file(file_path: &str, content: &[u8]) {
     fs::write(file_path, content).unwrap();
 }
 
-fn save_blob( content: &str) {
-    let hash=algorithm::sha1::Sha1::new().hash(content.as_bytes());
+fn save_blob(content: &str) {
+    let blob_content = format!("blob {}\0{}", content.len(), content);
+    let hash = algorithm::sha1::Sha1::new().hash(blob_content.as_bytes());
     println!("{}", hash);
     let object_path = format!(".git/objects/{}/{}", &hash[0..2], &hash[2..]);
     eprintln!("Saving blob to: {}", object_path);
-    fs::create_dir_all(object_path.split("/").collect::<Vec<_>>()[0]).unwrap();
-    let mut encoder = ZlibEncoder::new(content.as_bytes(), flate2::Compression::default());
+     fs::create_dir_all(format!(".git/objects/{}", &hash[0..2])).unwrap();
+    let mut encoder = ZlibEncoder::new(blob_content.as_bytes(), flate2::Compression::default());
     let mut compressed_content = Vec::new();
     encoder.read_to_end(&mut compressed_content).unwrap();
-    write_file(&object_path, &compressed_content.iter().map(|b| *b as char).collect::<String>());
+    write_file(&object_path, &compressed_content);
     eprintln!("Saved blob to: {}", object_path);
 }
 
