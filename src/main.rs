@@ -65,6 +65,7 @@ fn save_blob( content: &str) {
     let hash=algorithm::sha1::Sha1::new().hash(content.as_bytes());
     println!("{}", hash);
     let object_path = format!(".git/objects/{}/{}", &hash[0..2], &hash[2..]);
+    eprintln!("Saving blob to: {}", object_path);
     fs::create_dir_all(object_path.split("/").collect::<Vec<_>>()[0]).unwrap();
     let mut encoder = ZlibEncoder::new(content.as_bytes(), flate2::Compression::default());
     let mut compressed_content = Vec::new();
