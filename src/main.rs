@@ -27,7 +27,8 @@ fn main() {
                 let mut decoder = ZlibDecoder::new(&file_content[..]);
                 let mut file_content=String::new();
                 decoder.read_to_string(&mut file_content).unwrap();
-                
+                // 只要\0 后面的内容
+                let file_content=file_content.splitn(2, '\0').nth(1).unwrap();
                 print!("{}", file_content);
             } else {
                 println!("Usage: cat-file <object>");
