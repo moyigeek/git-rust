@@ -1,7 +1,6 @@
 use crate::algorithm::sha1;
 use flate2::read::{ZlibDecoder, ZlibEncoder};
 use std::env;
-use std::f32::consts::E;
 use std::fs;
 use std::io::Read;
 
@@ -67,7 +66,7 @@ fn save_blob(content: &str) {
     println!("{}", hash);
     let object_path = format!(".git/objects/{}/{}", &hash[0..2], &hash[2..]);
     eprintln!("Saving blob to: {}", object_path);
-     fs::create_dir_all(format!(".git/objects/{}", &hash[0..2])).unwrap();
+    fs::create_dir_all(format!(".git/objects/{}", &hash[0..2])).unwrap();
     let mut encoder = ZlibEncoder::new(blob_content.as_bytes(), flate2::Compression::default());
     let mut compressed_content = Vec::new();
     encoder.read_to_end(&mut compressed_content).unwrap();
