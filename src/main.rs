@@ -79,6 +79,7 @@ fn main() {
                 eprintln!("Reading file: {}", file_path);
                 let content=read_file(&file_path);
                 let de_content=zlib_decode(&content);
+                eprintln!("Decoded content: {}", de_content);
                 let (_,object_raw)=split_content(de_content);
                 eprintln!("{}",object_raw);
 
