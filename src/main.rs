@@ -76,6 +76,7 @@ fn main() {
             }
             if num_arg==4&&args[2]=="--name-only"{
                 let file_path=get_object_path(args[3].clone());
+                eprintln!("Reading file: {}", file_path);
                 let content=read_file(&file_path);
                 let de_content=zlib_decode(&content);
                 let (_,object_raw)=split_content(de_content);
